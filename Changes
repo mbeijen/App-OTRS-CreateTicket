@@ -1,5 +1,8 @@
 Revision history for App-OTRS-CreateTicket
 
+1.0.3 2012-08-28
+ - Fixed dependencies in dist.ini.
+
 1.0.2 2012-08-28
  - POD fix. Specified OTRS 3.1 as minimum version.
 
