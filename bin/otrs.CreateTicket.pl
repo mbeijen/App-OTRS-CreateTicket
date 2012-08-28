@@ -6,6 +6,9 @@ use warnings;
 use Getopt::Long;
 use Pod::Usage;
 use SOAP::Lite;
+use App::OTRS::CreateTicket;
+
+print "$0 version " .  App::OTRS::CreateTicket->VERSION() . "\n\n";
 
 my @TicketFields
     = qw ( Title CustomerUser Queue Priority State Type Service SLA Owner Responsible );
