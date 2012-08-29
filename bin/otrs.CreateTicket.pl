@@ -91,7 +91,7 @@ for my $Element (@ArticleFields) {
 
 my $DynamicFieldXML;
 if ($Param{DynamicField}) {
-    for my $DynamicField ( keys $Param{DynamicField} ) {
+    for my $DynamicField ( keys %{$Param{DynamicField}} ) {
         $DynamicFieldXML .= "<DynamicField>\n"
             . "\t<Name><![CDATA[$DynamicField]]></Name>\n"
             . "\t<Value><![CDATA[$Param{DynamicField}->{$DynamicField}]]></Value>\n"
