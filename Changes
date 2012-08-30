@@ -1,5 +1,8 @@
 Revision history for App-OTRS-CreateTicket
 
+1.0.5 2012-08-29
+ - Added option to load ticket body from a file or from STDIN.
+
 1.0.4 2012-08-28
  - Make it work on perls < 5.16.
 

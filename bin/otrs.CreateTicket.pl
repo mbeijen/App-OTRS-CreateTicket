@@ -27,6 +27,7 @@ GetOptions(
     'Operation=s',
     'Namespace=s',
     'Url=s',
+    'BodyFile=s',
     'Ssl',
     'help',
     # options for ticket
@@ -69,8 +70,18 @@ $Param{State}    ||= 'new';
 
 $Param{ContentType} ||= 'text/plain; charset=utf8';
 $Param{Subject}     ||= $Param{Title};
-$Param{Body}        ||= 'no body';
 $Param{SenderType}  ||= 'customer';
+
+if ( $Param{BodyFile} ) {
+    open my $Filehandle, '<', $Param{BodyFile} or die "Can't open file $Param{BodyFile}: $!";
+    # read in file at once as in PBP
+    $Param{Body} = do { local $/; <$Filehandle> };
+} elsif ( !$Param{Body} ) {
+    binmode STDIN;
+    while ( my $Line = <STDIN> ) {
+        $Param{Body} .= $Line;
+    }
+}
 
 # Converting Ticket and Article data into SOAP data structure
 my @TicketData;
@@ -159,12 +170,26 @@ otrs.CreateTicket.pl - create tickets in OTRS via web services.
 
 =head1 SYNOPSIS
 
+Example 1: all arguments on the command line
+
 otrs.CreateTicket.pl --Server otrs.example.com --Ssl --UserName myname  \
 --Password secretpass --Title 'The ticket title' \
 --CustomerUser customerlogin --Body 'The ticket body'
 --DynamicField Branch="Sales UK" --DynamicField Source=Monitoring
 
-=head1 SYNOPSIS
+Example 2: read body in from a file
+
+otrs.CreateTicket.pl --Server otrs.example.com --Ssl --UserName myname  \
+--Password secretpass --Title 'The ticket title' \
+--CustomerUser customerlogin --BodyFile description.txt
+
+Example 3: read body in from STDIN
+
+otrs.CreateTicket.pl --Server otrs.example.com --Ssl --UserName myname  \
+--Password secretpass --Title 'The ticket title' \
+--CustomerUser customerlogin < description.txt
+
+=head1 SYNTAX
 
 otrs.CreateTicket.pl command syntax:
 
@@ -196,6 +221,7 @@ Arguments:
     
     ARTICLE DATA
     --Subject       Optional, defaults to title if not defined.
+    --BodyFile      Name of file that contains body text of the message
     --Body          Body text of the message.
     --SenderType    Optional, defaults to 'Customer'.
     --ArticleType   Optional, defaults to 'web-request'.
