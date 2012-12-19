@@ -76,9 +76,10 @@ if ( $Param{BodyFile} ) {
     open my $Filehandle, '<', $Param{BodyFile} or die "Can't open file $Param{BodyFile}: $!";
     # read in file at once as in PBP
     $Param{Body} = do { local $/; <$Filehandle> };
+    close $Filehandle;
 } elsif ( !$Param{Body} ) {
     binmode STDIN;
-    while ( my $Line = <STDIN> ) {
+    while ( my $Line = <> ) {
         $Param{Body} .= $Line;
     }
 }
@@ -172,20 +173,20 @@ otrs.CreateTicket.pl - create tickets in OTRS via web services.
 
 Example 1: all arguments on the command line
 
-otrs.CreateTicket.pl --Server otrs.example.com --Ssl --UserName myname  \
+otrs.CreateTicket.pl --Server otrs.example.com --Ssl --UserLogin myname  \
 --Password secretpass --Title 'The ticket title' \
 --CustomerUser customerlogin --Body 'The ticket body'
 --DynamicField Branch="Sales UK" --DynamicField Source=Monitoring
 
 Example 2: read body in from a file
 
-otrs.CreateTicket.pl --Server otrs.example.com --Ssl --UserName myname  \
+otrs.CreateTicket.pl --Server otrs.example.com --Ssl --UserLogin myname  \
 --Password secretpass --Title 'The ticket title' \
 --CustomerUser customerlogin --BodyFile description.txt
 
 Example 3: read body in from STDIN
 
-otrs.CreateTicket.pl --Server otrs.example.com --Ssl --UserName myname  \
+otrs.CreateTicket.pl --Server otrs.example.com --Ssl --UserLogin myname  \
 --Password secretpass --Title 'The ticket title' \
 --CustomerUser customerlogin < description.txt
 
@@ -228,6 +229,7 @@ Arguments:
 
     DYNAMIC FIELDS
     --DynamicField  Optional. Can be passed multiple times. Takes Name=Value pairs.
-    
+
+
 =cut
 
