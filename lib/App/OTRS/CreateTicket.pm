@@ -2,7 +2,7 @@ use strict;
 use warnings;
 package App::OTRS::CreateTicket;
 
-our $VERSION = '1.0.6';
+our $VERSION = '1.0.7';
 # ABSTRACT: Create tickets in OTRS via the Command Line Interface.
 
 1;

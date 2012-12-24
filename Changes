@@ -1,5 +1,8 @@
 Revision history for App-OTRS-CreateTicket
 
+1.0.7 2012-12-24
+ - Specified minimum perl version to 5.8.7 to fix test failures.
+
 1.0.6 2012-12-19
  - Corrected POD UserLogin command line option.
  - Improved STDIN handling.
