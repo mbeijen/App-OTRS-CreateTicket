@@ -2,7 +2,7 @@ use strict;
 use warnings;
 package App::OTRS::CreateTicket;
 
-our $VERSION = '1.0.7';
+our $VERSION = '1.10';
 # ABSTRACT: Create tickets in OTRS via the Command Line Interface.
 
 1;
@@ -24,7 +24,7 @@ as the TicketConnector web service installed on your OTRS machine. In order to u
 GenericTicketConnector you need to use at least OTRS 3.1. 
 
 Activating the TicketConnector is easy. Download the yml file from the following URL:
-L<http://source.otrs.org/viewvc.cgi/otrs/development/webservices/GenericTicketConnector.yml?view=log>
+L<https://raw.github.com/OTRS/otrs/master/development/webservices/GenericTicketConnector.yml>
 
 Then log in to OTRS as an administrator, navigate to Admin > Web Services, click
 "Add web service", click "Import web service" and then navigate to the file you just
