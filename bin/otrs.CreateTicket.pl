@@ -3,12 +3,18 @@
 use strict;
 use warnings;
 
+use Encode;
+use Encode::Locale;
 use Getopt::Long;
 use Pod::Usage;
 use SOAP::Lite;
 use App::OTRS::CreateTicket;
 
 print "$0 version " .  App::OTRS::CreateTicket->VERSION() . "\n\n";
+
+@ARGV = map { decode(locale => $_, 1) } @ARGV if -t STDIN;
+binmode STDOUT, ":encoding(console_out)" if -t STDOUT;
+binmode STDERR, ":encoding(console_out)" if -t STDERR;
 
 my @TicketFields
     = qw ( Title CustomerUser Queue Priority State Type Service SLA Owner Responsible );
