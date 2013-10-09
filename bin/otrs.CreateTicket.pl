@@ -10,7 +10,9 @@ use Pod::Usage;
 use SOAP::Lite;
 use App::OTRS::CreateTicket;
 
-print "$0 version " .  App::OTRS::CreateTicket->VERSION() . "\n\n";
+our $VERSION = '1.12';
+
+print "$0 version $VERSION \n\n";
 
 @ARGV = map { decode(locale => $_, 1) } @ARGV if -t STDIN;
 binmode STDOUT, ":encoding(console_out)" if -t STDOUT;

@@ -1,5 +1,9 @@
 Revision history for App-OTRS-CreateTicket
 
+1.12  2013-10-09
+ - Improve @ARGV decoding, assume utf8.
+ - Cosmetic dist impovements.
+
 1.11  2013-02-28
  - Decode @ARGV properly, arguments now can include non-ascii chars.
 
