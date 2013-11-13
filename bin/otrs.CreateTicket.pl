@@ -10,7 +10,7 @@ use Pod::Usage;
 use SOAP::Lite;
 use App::OTRS::CreateTicket;
 
-our $VERSION = '1.12';
+our $VERSION = '1.13';
 
 print "$0 version $VERSION \n\n";
 
@@ -20,7 +20,7 @@ binmode STDERR, ":encoding(console_out)" if -t STDERR;
 
 my @TicketFields
     = qw ( Title CustomerUser Queue Priority State Type Service SLA Owner Responsible );
-my @ArticleFields = qw ( Subject Body ContentType ArticleType SenderType );
+my @ArticleFields = qw ( Subject Body ContentType ArticleType SenderType TimeUnit );
 
 my @TicketOptions  = map { $_ . '=s' } @TicketFields;
 my @ArticleOptions = map { $_ . '=s' } @ArticleFields;
@@ -79,6 +79,7 @@ $Param{State}    ||= 'new';
 $Param{ContentType} ||= 'text/plain; charset=utf8';
 $Param{Subject}     ||= $Param{Title};
 $Param{SenderType}  ||= 'customer';
+$Param{TimeUnit}    ||= 0;
 
 if ( $Param{BodyFile} ) {
     open my $Filehandle, '<', $Param{BodyFile} or die "Can't open file $Param{BodyFile}: $!";
@@ -209,14 +210,14 @@ Arguments:
     SERVER CONNECTION
     --Server        Name of OTRS server.
     --Ssl (boolean) If SSL (https) should be used.
-    
+
     Alternatively:
     --Url           Full URL to GenericTicket web service.
-    
+
     USER AUTHENTICATION
     --UserLogin     Login name of valid Agent account.
     --Password      Password for user.
-    
+
     TICKET DATA
     --Title         Title of ticket.
     --CustomerUser  Customer of ticket (mandatory!).
@@ -227,13 +228,14 @@ Arguments:
     --Service       Optional, and only if activated on the server.
     --SLA           Optional, and only if activated on the server.
     --Type          Optional, and only if activated on the server.
-    
+
     ARTICLE DATA
     --Subject       Optional, defaults to title if not defined.
     --BodyFile      Name of file that contains body text of the message
     --Body          Body text of the message.
     --SenderType    Optional, defaults to 'Customer'.
     --ArticleType   Optional, defaults to 'web-request'.
+    --TimeUnit      Can be optional or required depending on the server.
 
     DYNAMIC FIELDS
     --DynamicField  Optional. Can be passed multiple times. Takes Name=Value pairs.

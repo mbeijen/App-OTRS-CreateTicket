@@ -1,5 +1,11 @@
 Revision history for App-OTRS-CreateTicket
 
+1.13  2013-11-13
+ - Add --TimeUnit option, which is required on some servers.
+     Thanks to @jensoliver for reporting!
+   Note that because of https://github.com/OTRS/otrs/pull/157
+   on OTRS systems, you might not be able to set it to '0'.
+
 1.12  2013-10-09
  - Improve @ARGV decoding, assume utf8.
  - Cosmetic dist impovements.

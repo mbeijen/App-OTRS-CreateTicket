@@ -2,7 +2,7 @@ use strict;
 use warnings;
 package App::OTRS::CreateTicket;
 
-our $VERSION = '1.12';
+our $VERSION = '1.13';
 # ABSTRACT: Create tickets in OTRS via the Command Line Interface.
 
 1;
@@ -16,12 +16,12 @@ App::OTRS::CreateTicket - create OTRS tickets via web services from the command 
 
 =head1 DESCRIPTION
 
-This module contains one script, L<otrs.CreateTicket.pl>, which allows you to create 
+This module contains one script, L<otrs.CreateTicket.pl>, which allows you to create
 tickets in OTRS from the command line.
 
 For creating a ticket you'll need to have valid OTRS agent login credentials, as well
 as the TicketConnector web service installed on your OTRS machine. In order to use the
-GenericTicketConnector you need to use at least OTRS 3.1. 
+GenericTicketConnector you need to use at least OTRS 3.1.
 
 Activating the TicketConnector is easy. Download the yml file from the following URL:
 L<https://raw.github.com/OTRS/otrs/master/development/webservices/GenericTicketConnector.yml>
