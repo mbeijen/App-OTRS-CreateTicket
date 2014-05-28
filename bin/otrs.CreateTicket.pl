@@ -8,6 +8,7 @@ use Encode::Locale;
 use Getopt::Long;
 use Pod::Usage;
 use SOAP::Lite;
+use Time::Piece;
 use App::OTRS::CreateTicket;
 
 our $VERSION = '1.13';
@@ -40,6 +41,7 @@ GetOptions(
     'help',
     # options for ticket
     @TicketOptions,
+    'PendingTime=s',
     # options for article
     @ArticleOptions,
     # dynamic fields; can be multiple
@@ -93,6 +95,18 @@ if ( $Param{BodyFile} ) {
     }
 }
 
+# handle PendingTime, if it's a number, add it as minutes to current time.
+# otherwise, parse it as a string in YYYY-MM-DDTHH:MM format
+my $PendingTime;
+if ( defined $Param{PendingTime} && $Param{PendingTime} =~ /^\d*$/) {
+    $PendingTime = localtime;
+    $PendingTime += (60 * $Param{PendingTime});
+}
+elsif (defined $Param{PendingTime} ) {
+
+    $PendingTime = Time::Piece->strptime($Param{PendingTime}, "%Y-%m-%dT%R");
+}
+
 # Converting Ticket and Article data into SOAP data structure
 my @TicketData;
 for my $Element (@TicketFields) {
@@ -100,6 +114,20 @@ for my $Element (@TicketFields) {
         my $Param = SOAP::Data->name( $Element => $Param{$Element} );
         push @TicketData, $Param;
     }
+}
+
+if ( $PendingTime ) {
+
+    # create SOAP datastructure containing time elements
+    my @PendingData;
+    push @PendingData, SOAP::Data->name( Year => $PendingTime->year);
+    push @PendingData, SOAP::Data->name( Month => $PendingTime->mon);
+    push @PendingData, SOAP::Data->name( Day => $PendingTime->mday);
+    push @PendingData, SOAP::Data->name( Hour => $PendingTime->hour);
+    push @PendingData, SOAP::Data->name( Minute => $PendingTime->minute);
+
+    # add datastructure to ticket tree
+    push @TicketData, SOAP::Data->name( PendingTime => \SOAP::Data->value(@PendingData));
 }
 
 my @ArticleData;
@@ -193,11 +221,23 @@ otrs.CreateTicket.pl --Server otrs.example.com --Ssl --UserLogin myname  \
 --Password secretpass --Title 'The ticket title' \
 --CustomerUser customerlogin --BodyFile description.txt
 
-Example 3: read body in from STDIN
+Example 3: read body in from STDIN, pending at some date
 
 otrs.CreateTicket.pl --Server otrs.example.com --Ssl --UserLogin myname  \
+--State 'pending reminder' --PendingTime 2014-10-03T15:00
 --Password secretpass --Title 'The ticket title' \
 --CustomerUser customerlogin < description.txt
+
+Example 3: read body in from STDIN, pending in two hours
+
+otrs.CreateTicket.pl --Server otrs.example.com --Ssl --UserLogin myname  \
+--State 'pending reminder' --PendingTime 120
+--Password secretpass --Title 'The ticket title' \
+--CustomerUser customerlogin < description.txt
+
+Please note that if you do not specify a --BodyFile or pipe in a file, the
+command will expect your input as the ticket body; this is typically not
+what you want.
 
 =head1 SYNTAX
 
@@ -228,6 +268,8 @@ Arguments:
     --Service       Optional, and only if activated on the server.
     --SLA           Optional, and only if activated on the server.
     --Type          Optional, and only if activated on the server.
+    --PendingTime   If a number, # of minutes after current time. Otherwise,
+                    should be a string in 'YYYY-MM-DDTHH:MM' format.
 
     ARTICLE DATA
     --Subject       Optional, defaults to title if not defined.
