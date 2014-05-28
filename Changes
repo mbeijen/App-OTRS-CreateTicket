@@ -1,5 +1,10 @@
 Revision history for App-OTRS-CreateTicket
 
+1.14  2014-05-28
+ - Add --PendingTime option for pending states.
+   This option takes a date in YYYY-MM-DDTHH:MM format, or a number,
+   which is handled as the number of minutes from current time.
+
 1.13  2013-11-13
  - Add --TimeUnit option, which is required on some servers.
      Thanks to @jensoliver for reporting!

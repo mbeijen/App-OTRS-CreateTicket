@@ -9,9 +9,8 @@ use Getopt::Long;
 use Pod::Usage;
 use SOAP::Lite;
 use Time::Piece;
-use App::OTRS::CreateTicket;
 
-our $VERSION = '1.13';
+our $VERSION = '1.14';
 
 print "$0 version $VERSION \n\n";
 
