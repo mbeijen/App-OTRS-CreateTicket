@@ -1,5 +1,10 @@
 Revision history for App-OTRS-CreateTicket
 
+1.15  2015-04-22
+ - Force ticket and article parameters to string in generated SOAP
+   to prevent binary serialization in some circumstances. Thanks to
+   TitovLab for reporting. Fixes Github issue #2.
+
 1.14  2014-05-28
  - Add --PendingTime option for pending states.
    This option takes a date in YYYY-MM-DDTHH:MM format, or a number,

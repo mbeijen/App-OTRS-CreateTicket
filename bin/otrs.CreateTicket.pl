@@ -111,6 +111,7 @@ my @TicketData;
 for my $Element (@TicketFields) {
     if ( defined $Param{$Element} ) {
         my $Param = SOAP::Data->name( $Element => $Param{$Element} );
+        $Param->type('string');
         push @TicketData, $Param;
     }
 }
@@ -133,6 +134,7 @@ my @ArticleData;
 for my $Element (@ArticleFields) {
     if ( defined $Param{$Element} ) {
         my $Param = SOAP::Data->name( $Element => $Param{$Element} );
+        $Param->type('string');
         push @ArticleData, $Param;
     }
 }
