@@ -10,7 +10,7 @@ use Pod::Usage;
 use SOAP::Lite;
 use Time::Piece;
 
-our $VERSION = '1.14';
+our $VERSION = '1.15';
 
 print "$0 version $VERSION \n\n";
 
