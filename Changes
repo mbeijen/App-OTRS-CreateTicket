@@ -1,6 +1,8 @@
 Revision history for App-OTRS-CreateTicket
 
 1.15  2015-04-22
+ - Bundle example webservice configuration file in dist. Previously I used
+   an URL to the OTRS repo but they changed file names causing breakage.
  - Force ticket and article parameters to string in generated SOAP
    to prevent binary serialization in some circumstances. Thanks to
    TitovLab for reporting. Fixes Github issue #2.

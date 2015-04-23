@@ -25,7 +25,7 @@ as the TicketConnector web service installed on your OTRS machine. In order to u
 GenericTicketConnector you need to use at least OTRS 3.1.
 
 Activating the TicketConnector is easy. Download the yml file from the following URL:
-L<https://raw.github.com/OTRS/otrs/master/development/webservices/GenericTicketConnector.yml>
+L<https://raw.github.com/mbeijen/App-OTRS-CreateTicket/master/examples/GenericTicketConnector.yml>
 
 Then log in to OTRS as an administrator, navigate to Admin > Web Services, click
 "Add web service", click "Import web service" and then navigate to the file you just
