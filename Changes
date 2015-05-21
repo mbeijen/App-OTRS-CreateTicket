@@ -1,5 +1,9 @@
 Revision history for App-OTRS-CreateTicket
 
+1.16  2015-05-21
+ - Add option to add attachments to the created tickets.
+ - Specified Encode::Locale as a dependency.
+
 1.15  2015-04-22
  - Bundle example webservice configuration file in dist. Previously I used
    an URL to the OTRS repo but they changed file names causing breakage.

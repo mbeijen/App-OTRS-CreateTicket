@@ -5,12 +5,15 @@ use warnings;
 
 use Encode;
 use Encode::Locale;
+use File::Basename;
+use File::MimeInfo;
 use Getopt::Long;
+use MIME::Base64;
 use Pod::Usage;
 use SOAP::Lite;
 use Time::Piece;
 
-our $VERSION = '1.15';
+our $VERSION = '1.16';
 
 print "$0 version $VERSION \n\n";
 
@@ -45,6 +48,8 @@ GetOptions(
     @ArticleOptions,
     # dynamic fields; can be multiple
     'DynamicField=s%',
+    # attachments; can be multiple
+    'Attachment=s@',
 );
 
 if ( $Param{help} || !$Param{Url} && !$Param{Server} ) {
@@ -61,6 +66,27 @@ if ( !$Param{Url} ) {
 }
 else {
     $URL = $Param{Url};
+}
+
+# handle attachments
+my @Attachments;
+if (defined $Param{Attachment}) {
+
+    for my $File ( @{$Param{Attachment}} ) {
+        die "Can't find attachment '$File'.\n" if !-f $File;
+
+        # open attachment && read in
+        open my $fh, "<:unix", $File or die "Couldn't open $File: $!\n";
+        read $fh, my $Content, -s $fh or die "Couldn't read $File: $!";
+        close $fh;
+
+        # add to array with  basename of file and filename
+        push @Attachments, \SOAP::Data->name(Attachment => SOAP::Data->value(
+         SOAP::Data->name(Content     => encode_base64($Content)),
+         SOAP::Data->name(ContentType => mimetype($File)),
+         SOAP::Data->name(Filename    => basename($File)),
+        ));
+  }
 }
 
 # this name space should match the specified name space in the SOAP transport for the web service
@@ -143,30 +169,24 @@ my $DynamicFieldXML;
 if ($Param{DynamicField}) {
     for my $DynamicField ( keys %{$Param{DynamicField}} ) {
         $DynamicFieldXML .= "<DynamicField>\n"
-            . "\t<Name><![CDATA[$DynamicField]]></Name>\n"
-            . "\t<Value><![CDATA[$Param{DynamicField}->{$DynamicField}]]></Value>\n"
+            . "\t<Name>$DynamicField</Name>\n"
+            . "\t<Value>$Param{DynamicField}->{$DynamicField}</Value>\n"
             . "</DynamicField>\n";
     }
 }
 
+my @SOAPData;
+push @SOAPData, SOAP::Data->name(UserLogin)->value($Param{UserLogin});
+push @SOAPData, SOAP::Data->name(Password)->value($Param{Password});
+push @SOAPData, SOAP::Data->name(Ticket     => \SOAP::Data->value(@TicketData));
+push @SOAPData, SOAP::Data->name(Article    => \SOAP::Data->value(@ArticleData));
+push @SOAPData, SOAP::Data->name(Attachment => @Attachments) if @Attachments;
+push @SOAPData, SOAP::Data->type(xml        => $DynamicFieldXML);
+
 my $SOAPObject = SOAP::Lite
     ->uri($NameSpace)
     ->proxy($URL)
-    ->$Operation(
-    SOAP::Data->name('UserLogin')->value($Param{UserLogin}),
-    SOAP::Data->name('Password')->value($Param{Password}),
-    SOAP::Data->name(
-        'Ticket' => \SOAP::Data->value(
-            @TicketData,
-        )
-    ),
-    SOAP::Data->name(
-        'Article' => \SOAP::Data->value(
-            @ArticleData,
-        )
-    ),
-    SOAP::Data->type( 'xml'=> $DynamicFieldXML ),
-);
+    ->$Operation(@SOAPData);
 
 # check for a fault in the soap code
 if ( $SOAPObject->fault ) {
@@ -209,12 +229,13 @@ otrs.CreateTicket.pl - create tickets in OTRS via web services.
 
 =head1 SYNOPSIS
 
-Example 1: all arguments on the command line
+Example 1: all arguments on the command line, add attachment
 
 otrs.CreateTicket.pl --Server otrs.example.com --Ssl --UserLogin myname  \
 --Password secretpass --Title 'The ticket title' \
---CustomerUser customerlogin --Body 'The ticket body'
---DynamicField Branch="Sales UK" --DynamicField Source=Monitoring
+--CustomerUser customerlogin --Body 'The ticket body' \
+--DynamicField Branch="Sales UK" --DynamicField Source=Monitoring \
+--Attachment demo.xls --Attachment screenshot.png
 
 Example 2: read body in from a file
 
@@ -225,14 +246,14 @@ otrs.CreateTicket.pl --Server otrs.example.com --Ssl --UserLogin myname  \
 Example 3: read body in from STDIN, pending at some date
 
 otrs.CreateTicket.pl --Server otrs.example.com --Ssl --UserLogin myname  \
---State 'pending reminder' --PendingTime 2014-10-03T15:00
+--State 'pending reminder' --PendingTime 2014-10-03T15:00 \
 --Password secretpass --Title 'The ticket title' \
 --CustomerUser customerlogin < description.txt
 
-Example 3: read body in from STDIN, pending in two hours
+Example 4: read body in from STDIN, pending in two hours
 
 otrs.CreateTicket.pl --Server otrs.example.com --Ssl --UserLogin myname  \
---State 'pending reminder' --PendingTime 120
+--State 'pending reminder' --PendingTime 120 \
 --Password secretpass --Title 'The ticket title' \
 --CustomerUser customerlogin < description.txt
 
@@ -281,8 +302,12 @@ Arguments:
     --TimeUnit      Can be optional or required depending on the server.
 
     DYNAMIC FIELDS
-    --DynamicField  Optional. Can be passed multiple times. Takes Name=Value pairs.
+    --DynamicField  Optional. Can be passed multiple times.
+                    Takes Name=Value pairs.
 
+    ATTACHMENTS
+    --Attachment    Optional. Can be passed multiple times.
+                    Takes filenames as values.
 
 =cut
 
