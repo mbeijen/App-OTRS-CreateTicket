@@ -290,6 +290,9 @@ Arguments:
     --Service       Optional, and only if activated on the server.
     --SLA           Optional, and only if activated on the server.
     --Type          Optional, and only if activated on the server.
+                     PLEASE NOTE: on version 3.3 or later you might need to
+                      use the value 'Unclassified' as the default changed.
+
     --PendingTime   If a number, # of minutes after current time. Otherwise,
                     should be a string in 'YYYY-MM-DDTHH:MM' format.
 
