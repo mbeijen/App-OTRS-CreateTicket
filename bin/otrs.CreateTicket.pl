@@ -165,23 +165,23 @@ for my $Element (@ArticleFields) {
     }
 }
 
-my $DynamicFieldXML;
+my @DynamicFields;
 if ($Param{DynamicField}) {
     for my $DynamicField ( keys %{$Param{DynamicField}} ) {
-        $DynamicFieldXML .= "<DynamicField>\n"
-            . "\t<Name>$DynamicField</Name>\n"
-            . "\t<Value>$Param{DynamicField}->{$DynamicField}</Value>\n"
-            . "</DynamicField>\n";
+        push @DynamicFields, \SOAP::Data->name(DynamicField => SOAP::Data->value(
+            SOAP::Data->name(Name => $DynamicField),
+            SOAP::Data->name(Value => $Param{DynamicField}->{$DynamicField}),
+        ));
     }
 }
 
 my @SOAPData;
-push @SOAPData, SOAP::Data->name(UserLogin)->value($Param{UserLogin});
-push @SOAPData, SOAP::Data->name(Password)->value($Param{Password});
-push @SOAPData, SOAP::Data->name(Ticket     => \SOAP::Data->value(@TicketData));
-push @SOAPData, SOAP::Data->name(Article    => \SOAP::Data->value(@ArticleData));
-push @SOAPData, SOAP::Data->name(Attachment => @Attachments) if @Attachments;
-push @SOAPData, SOAP::Data->type(xml        => $DynamicFieldXML);
+push @SOAPData, SOAP::Data->name('UserLogin')->value($Param{UserLogin});
+push @SOAPData, SOAP::Data->name('Password')->value($Param{Password});
+push @SOAPData, SOAP::Data->name(Ticket       => \SOAP::Data->value(@TicketData));
+push @SOAPData, SOAP::Data->name(Article      => \SOAP::Data->value(@ArticleData));
+push @SOAPData, SOAP::Data->name(Attachment   => @Attachments) if @Attachments;
+push @SOAPData, SOAP::Data->name(DynamicField => @DynamicFields) if @DynamicFields;
 
 my $SOAPObject = SOAP::Lite
     ->uri($NameSpace)
