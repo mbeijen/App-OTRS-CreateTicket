@@ -8,4 +8,5 @@ t/symlink
 App-OTRS-CreateTicket-*
 pm_to_blib
 *.swp
+.perl-version
 
